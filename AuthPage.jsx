@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function AuthPage({ onLogin }) {
-  const [mode, setMode] = useState('login'); // 'login' or 'signup'
+  const [mode, setMode] = useState(localStorage.getItem('duel_ref') ? 'signup' : 'login'); // 'login' or 'signup'
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -12,6 +13,14 @@ export default function AuthPage({ onLogin }) {
   });
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  // Live numbers for the intro (public endpoint, also wakes the server up)
+  useEffect(() => {
+    fetch(`${API_URL}/api/stats`)
+      .then((r) => r.json())
+      .then((d) => setStats(d))
+      .catch(() => {});
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +39,7 @@ export default function AuthPage({ onLogin }) {
 
       const payload = mode === 'login'
         ? { email: formData.email, password: formData.password }
-        : formData;
+        : { ...formData, ref: localStorage.getItem('duel_ref') || undefined };
 
       const res = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
@@ -72,8 +81,21 @@ export default function AuthPage({ onLogin }) {
       <div className="auth-container">
         <div className="auth-header">
           <h1>📸 DUEL</h1>
-          <p>Vote on photos. Get ranked. Share your results.</p>
+          <h2 className="auth-tagline">Which photo wins? You decide.</h2>
+          <p className="auth-sub">Upload your best shot. Let the crowd rank it.</p>
         </div>
+
+        <div className="how-it-works">
+          <div className="how-step"><span>📤</span><b>Upload</b><small>your best shot</small></div>
+          <div className="how-step"><span>🗳️</span><b>Duel</b><small>people pick winners</small></div>
+          <div className="how-step"><span>🏆</span><b>Rank up</b><small>climb the board</small></div>
+        </div>
+
+        {stats && stats.totalPhotos > 0 && (
+          <div className="auth-stats">
+            🔥 {stats.totalPhotos} photos · {stats.totalUsers} players · {stats.totalMatches || 0} duels
+          </div>
+        )}
 
         <div className="auth-form">
           <div className="mode-toggle">

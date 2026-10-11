@@ -7,6 +7,12 @@ import LeaderboardPage from './LeaderboardPage';
 import ProfilePage from './ProfilePage';
 import AdminPage from './AdminPage';
 
+// Remember who invited this visitor (?ref=username) until they sign up
+try {
+  const ref = new URLSearchParams(window.location.search).get('ref');
+  if (ref) localStorage.setItem('duel_ref', ref);
+} catch (e) {}
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState('auth');
   const [user, setUser] = useState(null);
@@ -23,7 +29,7 @@ export default function App() {
       fetch(`${API_URL}/api/auth/google-callback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code, ref: localStorage.getItem('duel_ref') || undefined })
       })
         .then((r) => r.json())
         .then((data) => {
@@ -78,6 +84,7 @@ export default function App() {
     setToken(authToken);
     setUser(userData);
     localStorage.setItem('duel_token', authToken);
+    localStorage.removeItem('duel_ref');
     setCurrentPage('vote');
   };
 

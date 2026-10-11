@@ -890,3 +890,72 @@ td {
 }
 .admin-remove { background: #e03131; color: white; }
 .admin-keep { background: #e6f4ea; color: #1e7e34; }
+
+
+/* ===== Intro (landing) ===== */
+.auth-tagline {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 4px 0 6px;
+  line-height: 1.2;
+}
+.auth-sub {
+  font-size: 16px;
+  opacity: 0.95;
+  margin: 0;
+}
+.how-it-works {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.how-step {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 10px 6px;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.how-step span { font-size: 22px; }
+.how-step b { font-size: 14px; }
+.how-step small { font-size: 11px; opacity: 0.9; }
+.auth-stats {
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+/* ===== Share card + invite ===== */
+.share-modal { max-width: 400px; max-height: 92vh; overflow-y: auto; }
+.share-canvas { width: 100%; height: auto; border-radius: 14px; }
+.share-note { text-align: center; padding: 30px 10px; color: #555; }
+.share-actions { display: flex; gap: 10px; margin-top: 12px; }
+.share-primary, .share-secondary {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.share-primary { background: linear-gradient(135deg, #ff6b6b, #cc5de8); color: white; }
+.share-secondary { background: #f0f0f0; color: #333; }
+.photo-share-btn {
+  margin-top: 6px;
+  width: 100%;
+  padding: 6px;
+  background: #f3e8ff;
+  border: 1px solid #e0c3fc;
+  border-radius: 8px;
+  color: #7b2cbf;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.invite-count { margin: 8px 0 0; font-size: 13px; color: #777; text-align: center; }

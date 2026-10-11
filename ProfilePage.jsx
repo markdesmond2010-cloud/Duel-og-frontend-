@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ShareCard from './ShareCard';
 
 export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) {
   const [photos, setPhotos] = useState([]);
@@ -8,6 +9,7 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
   const [bio, setBio] = useState(user?.bio || '');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [cardPhoto, setCardPhoto] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -74,17 +76,18 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
     }
   };
 
-  const shareLink = `${window.location.origin}/user/${user?.id}`;
+  const shareLink = `${window.location.origin}/?ref=${user?.username || ''}`;
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: `${user.displayName}'s DUEL Profile`,
+        title: 'Join me on DUEL',
+        text: 'Which photo wins? Upload your best shot and let the crowd rank it.',
         url: shareLink
-      });
+      }).catch(() => {});
     } else {
       navigator.clipboard.writeText(shareLink);
-      setMessage('🔗 Link copied to clipboard!');
+      setMessage('🔗 Invite link copied!');
       setTimeout(() => setMessage(''), 2000);
     }
   };
@@ -148,8 +151,13 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
           {message && <div className="profile-message">{message}</div>}
 
           <button className="btn-share" onClick={handleShare}>
-            📱 Share My Profile
+            👋 Invite friends
           </button>
+          <p className="invite-count">
+            {user?.invitedCount > 0
+              ? `🎉 ${user.invitedCount} friend${user.invitedCount === 1 ? '' : 's'} joined with your link`
+              : 'Share your link to bring friends in'}
+          </p>
         </div>
 
         {/* User's Photos */}
@@ -172,6 +180,12 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
                     <p className="photo-grid-rating">⭐ {Math.round(photo.rating)}</p>
                     <p className="photo-grid-record">{photo.wins}W - {photo.losses}L</p>
                     <button
+                      className="photo-share-btn"
+                      onClick={() => setCardPhoto(photo)}
+                    >
+                      📤 Share
+                    </button>
+                    <button
                       className="photo-delete-btn"
                       onClick={() => handleDeletePhoto(photo)}
                     >
@@ -183,6 +197,10 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
             </div>
           )}
         </div>
+
+        {cardPhoto && (
+          <ShareCard photo={cardPhoto} user={user} onClose={() => setCardPhoto(null)} />
+        )}
 
         {/* Logout */}
         <button className="btn-logout-full" onClick={onLogout}>
