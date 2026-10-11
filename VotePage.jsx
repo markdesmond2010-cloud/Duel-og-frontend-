@@ -23,7 +23,11 @@ export default function VotePage({ token }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      setMatchup(data);
+      if (res.ok && data.photoA && data.photoB) {
+        setMatchup(data);
+      } else {
+        setMatchup(null);
+      }
     } catch (err) {
       setResult('❌ Error loading photos. Try again.');
     } finally {
@@ -73,7 +77,7 @@ export default function VotePage({ token }) {
     );
   }
 
-  if (!matchup) {
+  if (!matchup || !matchup.photoA || !matchup.photoB) {
     return (
       <div className="page vote-page">
         <div className="error">❌ No photos yet. Upload some to get started!</div>

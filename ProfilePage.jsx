@@ -21,7 +21,7 @@ export default function ProfilePage({ token, user, onLogout }) {
     try {
       const res = await fetch(`${API_URL}/api/users/${user.id}/photos`);
       const data = await res.json();
-      setPhotos(data);
+      setPhotos(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load photos:', err);
     } finally {

@@ -17,7 +17,7 @@ export default function LeaderboardPage() {
     try {
       const res = await fetch(`${API_URL}/api/leaderboard`);
       const data = await res.json();
-      setLeaderboard(data);
+      setLeaderboard(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load leaderboard:', err);
     } finally {
