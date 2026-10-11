@@ -959,3 +959,73 @@ td {
   cursor: pointer;
 }
 .invite-count { margin: 8px 0 0; font-size: 13px; color: #777; text-align: center; }
+
+
+/* ===== Share card extras ===== */
+.share-link-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  background: transparent;
+  border: 1px dashed #c9a6ee;
+  border-radius: 10px;
+  color: #7b2cbf;
+  font-size: 14px;
+  cursor: pointer;
+}
+.share-note.small { padding: 8px 4px 0; font-size: 13px; }
+
+/* ===== Public profile (/u/username) ===== */
+.public-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff6b6b 0%, #cc5de8 100%);
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+.public-card {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  color: white;
+}
+.public-brand { font-size: 34px; font-weight: 900; }
+.public-tagline { margin: 4px 0 22px; opacity: 0.95; }
+.public-note { background: white; color: #555; border-radius: 16px; padding: 24px; }
+.public-avatar {
+  width: 96px; height: 96px; border-radius: 50%;
+  margin: 0 auto 10px;
+  background: white; color: #9d2bd1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; font-weight: 800; overflow: hidden;
+  border: 4px solid rgba(255,255,255,0.8);
+}
+.public-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.public-name { margin: 4px 0 0; font-size: 26px; }
+.public-handle { margin: 2px 0 16px; opacity: 0.9; }
+.public-stats {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.public-stats div {
+  flex: 1; background: rgba(255,255,255,0.2); border-radius: 14px;
+  padding: 10px 4px; display: flex; flex-direction: column; gap: 2px;
+}
+.public-stats b { font-size: 22px; }
+.public-stats small { font-size: 10px; letter-spacing: 0.5px; opacity: 0.9; }
+.public-photos { display: flex; gap: 8px; margin-bottom: 18px; }
+.public-photo {
+  position: relative; flex: 1; aspect-ratio: 3 / 4;
+  border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.2);
+}
+.public-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.public-rank {
+  position: absolute; left: 6px; bottom: 6px;
+  background: white; color: #9d2bd1; font-weight: 800; font-size: 13px;
+  padding: 2px 8px; border-radius: 999px;
+}
+.public-cta {
+  width: 100%; padding: 15px; border: none; border-radius: 14px;
+  background: white; color: #9d2bd1; font-size: 17px; font-weight: 800; cursor: pointer;
+}

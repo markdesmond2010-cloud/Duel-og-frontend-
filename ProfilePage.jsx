@@ -76,7 +76,7 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
     }
   };
 
-  const shareLink = `${window.location.origin}/?ref=${user?.username || ''}`;
+  const shareLink = `${window.location.origin}/u/${user?.username || ''}`;
 
   const handleShare = () => {
     if (navigator.share) {

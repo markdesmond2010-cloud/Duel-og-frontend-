@@ -6,14 +6,19 @@ import UploadPage from './UploadPage';
 import LeaderboardPage from './LeaderboardPage';
 import ProfilePage from './ProfilePage';
 import AdminPage from './AdminPage';
+import PublicProfile from './PublicProfile';
 
-// Remember who invited this visitor (?ref=username) until they sign up
+// Public profile links look like /u/<username>
+const profileMatch = window.location.pathname.match(/^\/u\/([^/]+)\/?$/);
+
+// Remember who invited this visitor (?ref=username or /u/username) until they sign up
 try {
-  const ref = new URLSearchParams(window.location.search).get('ref');
-  if (ref) localStorage.setItem('duel_ref', ref);
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref') || (profileMatch ? decodeURIComponent(profileMatch[1]) : null);
+  if (ref && !localStorage.getItem('duel_token')) localStorage.setItem('duel_ref', ref);
 } catch (e) {}
 
-export default function App() {
+function MainApp() {
   const [currentPage, setCurrentPage] = useState('auth');
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('duel_token'));
@@ -163,4 +168,16 @@ export default function App() {
       </footer>
     </div>
   );
+}
+
+export default function App() {
+  if (profileMatch) {
+    return (
+      <PublicProfile
+        username={decodeURIComponent(profileMatch[1])}
+        loggedIn={!!localStorage.getItem('duel_token')}
+      />
+    );
+  }
+  return <MainApp />;
 }

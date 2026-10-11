@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+// Turn on later when the numbers look impressive
+const SHOW_LIVE_STATS = false;
+
 export default function AuthPage({ onLogin }) {
   const [mode, setMode] = useState(localStorage.getItem('duel_ref') ? 'signup' : 'login'); // 'login' or 'signup'
   const [stats, setStats] = useState(null);
@@ -16,6 +19,7 @@ export default function AuthPage({ onLogin }) {
 
   // Live numbers for the intro (public endpoint, also wakes the server up)
   useEffect(() => {
+    if (!SHOW_LIVE_STATS) return;
     fetch(`${API_URL}/api/stats`)
       .then((r) => r.json())
       .then((d) => setStats(d))
