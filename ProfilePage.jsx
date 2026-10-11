@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function ProfilePage({ token, user, onLogout }) {
+export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -26,6 +26,25 @@ export default function ProfilePage({ token, user, onLogout }) {
       console.error('Failed to load photos:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeletePhoto = async (photo) => {
+    if (!window.confirm(`Delete "${photo.title}"? This cannot be undone.`)) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/photos/${photo.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Delete failed');
+
+      setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
+      setMessage('🗑️ Photo deleted');
+      setTimeout(() => setMessage(''), 2000);
+      if (onPhotosChanged) onPhotosChanged();
+    } catch (err) {
+      setMessage('❌ Could not delete photo');
     }
   };
 
@@ -152,6 +171,12 @@ export default function ProfilePage({ token, user, onLogout }) {
                     <p className="photo-grid-title">{photo.title}</p>
                     <p className="photo-grid-rating">⭐ {Math.round(photo.rating)}</p>
                     <p className="photo-grid-record">{photo.wins}W - {photo.losses}L</p>
+                    <button
+                      className="photo-delete-btn"
+                      onClick={() => handleDeletePhoto(photo)}
+                    >
+                      🗑️ Delete
+                    </button>
                   </div>
                 </div>
               ))}

@@ -5,6 +5,7 @@ import VotePage from './VotePage';
 import UploadPage from './UploadPage';
 import LeaderboardPage from './LeaderboardPage';
 import ProfilePage from './ProfilePage';
+import AdminPage from './AdminPage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('auth');
@@ -41,6 +42,11 @@ export default function App() {
     }
     fetchStats();
   }, [token]);
+
+  // Keep the photo counter fresh when switching pages
+  useEffect(() => {
+    if (token) fetchStats();
+  }, [currentPage]);
 
   const fetchCurrentUser = async () => {
     try {
@@ -118,6 +124,14 @@ export default function App() {
               >
                 👤 {user?.displayName || user?.username}
               </button>
+              {user?.isAdmin && (
+                <button
+                  className={`nav-btn ${currentPage === 'admin' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('admin')}
+                >
+                  🛡️ Admin
+                </button>
+              )}
             </nav>
             <div className="stats">
               <span>📊 {stats.totalPhotos} photos</span>
@@ -132,7 +146,8 @@ export default function App() {
         {currentPage === 'vote' && <VotePage token={token} />}
         {currentPage === 'upload' && <UploadPage token={token} onUploadSuccess={() => setCurrentPage('vote')} />}
         {currentPage === 'leaderboard' && <LeaderboardPage />}
-        {currentPage === 'profile' && <ProfilePage token={token} user={user} onLogout={logout} />}
+        {currentPage === 'profile' && <ProfilePage token={token} user={user} onLogout={logout} onPhotosChanged={fetchStats} />}
+        {currentPage === 'admin' && user?.isAdmin && <AdminPage token={token} onPhotosChanged={fetchStats} />}
       </main>
 
       {/* Footer */}
