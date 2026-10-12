@@ -12,8 +12,9 @@ export default function VotePage({ token }) {
   const [emptyCode, setEmptyCode] = useState('');
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
-  const [result, setResult] = useState('');
-  const [voteCount, setVoteCount] = useState(0);
+  const [selectedId, setSelectedId] = useState(null);
+  const [status, setStatus] = useState('');
+  const [agree, setAgree] = useState('');
   const [reportTarget, setReportTarget] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -25,7 +26,9 @@ export default function VotePage({ token }) {
   const loadNextMatchup = async () => {
     setLoading(true);
     setVoting(false);
-    setResult('');
+    setSelectedId(null);
+    setStatus('');
+    setAgree('');
     setEmptyCode('');
 
     try {
@@ -41,7 +44,7 @@ export default function VotePage({ token }) {
       }
     } catch (err) {
       setMatchup(null);
-      setResult('❌ Error loading photos. Try again.');
+      setStatus('❌ Error loading photos. Try again.');
     } finally {
       setLoading(false);
     }
@@ -50,6 +53,7 @@ export default function VotePage({ token }) {
   const handleVote = async (winnerId) => {
     if (voting) return;
     setVoting(true);
+    setSelectedId(winnerId);
 
     try {
       const res = await fetch(`${API_URL}/api/matchup/vote`, {
@@ -64,20 +68,28 @@ export default function VotePage({ token }) {
           winnerId
         })
       });
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        setResult(`❌ ${err.error || 'Vote failed'}`);
-        setTimeout(loadNextMatchup, 1500);
+        setSelectedId(null);
+        setStatus(
+          res.status === 409
+            ? 'ℹ️ You already voted on this battle.'
+            : `❌ ${data.error || 'Vote failed'}`
+        );
+        setTimeout(loadNextMatchup, 1600);
         return;
       }
 
-      const winner = winnerId === matchup.photoA.id ? matchup.photoA : matchup.photoB;
-      setResult(`🎉 ${winner.title} wins!`);
-      setVoteCount((c) => c + 1);
-      setTimeout(loadNextMatchup, 1500);
+      setStatus('✅ Vote recorded');
+      if (data.pairVotes && data.pairVotes.total >= 3) {
+        const pct = Math.round((data.pairVotes.winnerVotes / data.pairVotes.total) * 100);
+        setAgree(`${pct}% of voters picked the same photo`);
+      }
+      setTimeout(loadNextMatchup, 1700);
     } catch (err) {
-      setResult('❌ Error voting. Try again.');
+      setSelectedId(null);
+      setStatus('❌ Error voting. Try again.');
       setVoting(false);
     }
   };
@@ -97,18 +109,18 @@ export default function VotePage({ token }) {
         body: JSON.stringify({ reason })
       });
       if (!res.ok) throw new Error('Report failed');
-      setResult('🚩 Thanks, we will review that photo.');
+      setStatus('🚩 Thanks, we will review that photo.');
       setVoting(true);
       setTimeout(loadNextMatchup, 1500);
     } catch (err) {
-      setResult('❌ Could not send report. Try again.');
+      setStatus('❌ Could not send report. Try again.');
     }
   };
 
   if (loading) {
     return (
       <div className="page vote-page">
-        <div className="loading">⏳ Loading photos...</div>
+        <div className="loading">⏳ Loading battle...</div>
       </div>
     );
   }
@@ -118,12 +130,12 @@ export default function VotePage({ token }) {
     if (emptyCode === 'NOT_ENOUGH_PHOTOS') {
       message = '📸 Not enough photos from other people yet. Upload yours and invite friends to join!';
     } else if (emptyCode === 'ALL_VOTED') {
-      message = "🎉 You've voted on every pair for now. Come back later when more photos are uploaded!";
+      message = "🎉 You've voted on every battle for now. Come back later when more photos are uploaded!";
     }
     return (
       <div className="page vote-page">
         <div className="error">{message}</div>
-        {result && <div className="result-message">{result}</div>}
+        {status && <div className="battle-status">{status}</div>}
         <button className="btn-secondary" style={{ marginTop: 16 }} onClick={loadNextMatchup}>
           🔄 Try again
         </button>
@@ -131,64 +143,56 @@ export default function VotePage({ token }) {
     );
   }
 
-  const renderCard = (photo, letter) => (
-    <div className="photo-card">
-      <div
-        className="photo-image-container"
-        onClick={() => handleVote(photo.id)}
-      >
-        <img src={photo.imageUrl} alt={photo.title} className="photo-image" />
-        <div className="photo-overlay">
-          <span className="vote-hint">Click to Vote</span>
+  const renderSide = (photo, letter) => {
+    const picked = selectedId === photo.id;
+    const dimmed = selectedId && !picked;
+    return (
+      <div className={`battle-side ${picked ? 'selected' : ''} ${dimmed ? 'dimmed' : ''}`}>
+        <div className="battle-photo" onClick={() => handleVote(photo.id)}>
+          <img src={photo.imageUrl} alt={`Photo ${letter}`} />
+          {picked && <span className="pick-badge">✓ Your pick</span>}
+        </div>
+        <div className="battle-meta">
+          <div className="battle-user">@{photo.uploader?.username || photo.uploader?.displayName}</div>
+          <button
+            className={`battle-vote-btn battle-vote-${letter.toLowerCase()}`}
+            onClick={() => handleVote(photo.id)}
+            disabled={voting}
+          >
+            Vote for this photo
+          </button>
+          <button
+            className="battle-report"
+            onClick={() => setReportTarget(photo)}
+            disabled={voting}
+          >
+            🚩 Report
+          </button>
         </div>
       </div>
-
-      <div className="photo-info">
-        <h3>{photo.title}</h3>
-        <p className="uploader">by {photo.uploader?.displayName}</p>
-        <div className="stats-row">
-          <span className="stat-badge">Rating: {Math.round(photo.rating)}</span>
-          <span className="stat-badge">{photo.wins}W</span>
-        </div>
-        <button
-          className={`btn-vote btn-vote-${letter.toLowerCase()}`}
-          onClick={() => handleVote(photo.id)}
-          disabled={voting}
-        >
-          ✨ Vote {letter}
-        </button>
-        <button
-          className="report-btn"
-          onClick={() => setReportTarget(photo)}
-          disabled={voting}
-        >
-          🚩 Report
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="page vote-page">
-      <h2 className="page-title">🗳️ Which is better?</h2>
+      <h2 className="battle-title">CHOOSE THE WINNER</h2>
 
-      <div className="vote-container">
-        {renderCard(matchup.photoA, 'A')}
-        <div className="vs-divider">VS</div>
-        {renderCard(matchup.photoB, 'B')}
+      <div className="battle">
+        {renderSide(matchup.photoA, 'A')}
+        <div className="battle-vs">VS</div>
+        {renderSide(matchup.photoB, 'B')}
       </div>
 
-      {result && <div className="result-message">{result}</div>}
-
-      {voteCount > 0 && (
-        <div className="vote-count">🗳️ Votes cast: {voteCount}</div>
-      )}
+      <div className="battle-status">
+        {status || 'Tap a photo to vote'}
+        {agree && <div className="battle-agree">{agree}</div>}
+      </div>
 
       {reportTarget && (
         <div className="modal-overlay" onClick={() => setReportTarget(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Report "{reportTarget.title}"</h3>
-            <p>Why are you reporting this photo?</p>
+            <h3>Report this photo</h3>
+            <p>Why are you reporting it?</p>
             {REPORT_REASONS.map((reason) => (
               <button
                 key={reason}

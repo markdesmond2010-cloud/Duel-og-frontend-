@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ShareCard from './ShareCard';
 
-export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) {
+export default function ProfilePage({ token, user, onLogout, onPhotosChanged, onProfileUpdated }) {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [username, setUsername] = useState(user?.username || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -61,16 +62,20 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ displayName, bio })
+        body: JSON.stringify({ displayName, bio, username })
       });
 
-      if (!res.ok) throw new Error('Update failed');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Update failed');
+      }
 
       setMessage('✅ Profile updated!');
       setEditing(false);
+      if (onProfileUpdated) onProfileUpdated();
       setTimeout(() => setMessage(''), 2000);
     } catch (err) {
-      setMessage('❌ Failed to update profile');
+      setMessage(`❌ ${err.message || 'Failed to update profile'}`);
     } finally {
       setSaving(false);
     }
@@ -123,6 +128,17 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
                 placeholder="Display Name"
                 maxLength={50}
               />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                placeholder="Username"
+                maxLength={20}
+                autoCapitalize="none"
+              />
+              <p className="username-hint">
+                Your link: {window.location.host}/u/{username || 'username'}
+              </p>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
@@ -177,8 +193,10 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged }) 
                   <img src={photo.imageUrl} alt={photo.title} />
                   <div className="photo-grid-info">
                     <p className="photo-grid-title">{photo.title}</p>
-                    <p className="photo-grid-rating">⭐ {Math.round(photo.rating)}</p>
-                    <p className="photo-grid-record">{photo.wins}W - {photo.losses}L</p>
+                    <p className="photo-grid-rating">Rating: {Math.round(photo.rating)}</p>
+                    <p className="photo-grid-record">
+                      Record: {photo.wins} {photo.wins === 1 ? 'win' : 'wins'} · {photo.losses} {photo.losses === 1 ? 'loss' : 'losses'}
+                    </p>
                     <button
                       className="photo-share-btn"
                       onClick={() => setCardPhoto(photo)}

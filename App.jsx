@@ -106,50 +106,10 @@ function MainApp() {
 
   return (
     <div className="app">
-      {/* Header */}
+      {/* Header (compact) */}
       <header className="header">
-        <div className="container">
-          <div className="header-content">
-            <h1 className="logo">📸 DUEL</h1>
-            <nav className="nav">
-              <button 
-                className={`nav-btn ${currentPage === 'vote' ? 'active' : ''}`}
-                onClick={() => setCurrentPage('vote')}
-              >
-                🗳️ Vote
-              </button>
-              <button 
-                className={`nav-btn ${currentPage === 'upload' ? 'active' : ''}`}
-                onClick={() => setCurrentPage('upload')}
-              >
-                📸 Upload
-              </button>
-              <button 
-                className={`nav-btn ${currentPage === 'leaderboard' ? 'active' : ''}`}
-                onClick={() => setCurrentPage('leaderboard')}
-              >
-                🏆 Top
-              </button>
-              <button 
-                className={`nav-btn ${currentPage === 'profile' ? 'active' : ''}`}
-                onClick={() => setCurrentPage('profile')}
-              >
-                👤 {user?.displayName || user?.username}
-              </button>
-              {user?.isAdmin && (
-                <button
-                  className={`nav-btn ${currentPage === 'admin' ? 'active' : ''}`}
-                  onClick={() => setCurrentPage('admin')}
-                >
-                  🛡️ Admin
-                </button>
-              )}
-            </nav>
-            <div className="stats">
-              <span>📊 {stats.totalPhotos} photos</span>
-              <button onClick={logout} className="btn-logout">Logout</button>
-            </div>
-          </div>
+        <div className="header-content">
+          <h1 className="logo">📸 DUEL</h1>
         </div>
       </header>
 
@@ -158,14 +118,45 @@ function MainApp() {
         {currentPage === 'vote' && <VotePage token={token} />}
         {currentPage === 'upload' && <UploadPage token={token} onUploadSuccess={() => setCurrentPage('vote')} />}
         {currentPage === 'leaderboard' && <LeaderboardPage />}
-        {currentPage === 'profile' && <ProfilePage token={token} user={user} onLogout={logout} onPhotosChanged={fetchStats} />}
+        {currentPage === 'profile' && <ProfilePage token={token} user={user} onLogout={logout} onPhotosChanged={fetchStats} onProfileUpdated={fetchCurrentUser} />}
         {currentPage === 'admin' && user?.isAdmin && <AdminPage token={token} onPhotosChanged={fetchStats} />}
       </main>
 
-      {/* Footer */}
-      <footer className="footer">
-        <p>🎯 Vote on photos. Get ranked. Share your results.</p>
-      </footer>
+      {/* Bottom navigation */}
+      <nav className="bottom-nav">
+        <button
+          className={`bn-btn ${currentPage === 'vote' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('vote')}
+        >
+          <span>🗳️</span>Vote
+        </button>
+        <button
+          className={`bn-btn ${currentPage === 'upload' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('upload')}
+        >
+          <span>📸</span>Upload
+        </button>
+        <button
+          className={`bn-btn ${currentPage === 'leaderboard' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('leaderboard')}
+        >
+          <span>🏆</span>Top
+        </button>
+        <button
+          className={`bn-btn ${currentPage === 'profile' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('profile')}
+        >
+          <span>👤</span>Profile
+        </button>
+        {user?.isAdmin && (
+          <button
+            className={`bn-btn ${currentPage === 'admin' ? 'active' : ''}`}
+            onClick={() => setCurrentPage('admin')}
+          >
+            <span>🛡️</span>Admin
+          </button>
+        )}
+      </nav>
     </div>
   );
 }
