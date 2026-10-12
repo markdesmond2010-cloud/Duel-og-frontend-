@@ -7,6 +7,7 @@ import LeaderboardPage from './LeaderboardPage';
 import ProfilePage from './ProfilePage';
 import AdminPage from './AdminPage';
 import PublicProfile from './PublicProfile';
+import LandingPage from './LandingPage';
 
 // Public profile links look like /u/<username>
 const profileMatch = window.location.pathname.match(/^\/u\/([^/]+)\/?$/);
@@ -20,6 +21,9 @@ try {
 
 function MainApp() {
   const [currentPage, setCurrentPage] = useState('auth');
+  const [authView, setAuthView] = useState('landing'); // 'landing' | 'auth'
+  const [authMode, setAuthMode] = useState('login');
+  const [authNotice, setAuthNotice] = useState('');
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('duel_token'));
   const [stats, setStats] = useState({ totalPhotos: 0, totalUsers: 0 });
@@ -98,10 +102,29 @@ function MainApp() {
     setUser(null);
     localStorage.removeItem('duel_token');
     setCurrentPage('auth');
+    setAuthView('landing');
   };
 
   if (!token) {
-    return <AuthPage onLogin={handleLogin} />;
+    if (authView === 'landing') {
+      return (
+        <LandingPage
+          onJoin={(mode, notice) => {
+            setAuthMode(mode || 'login');
+            setAuthNotice(notice || '');
+            setAuthView('auth');
+          }}
+        />
+      );
+    }
+    return (
+      <AuthPage
+        onLogin={handleLogin}
+        initialMode={authMode}
+        notice={authNotice}
+        onBack={() => setAuthView('landing')}
+      />
+    );
   }
 
   return (

@@ -43,11 +43,23 @@ export default function PublicProfile({ username, loggedIn }) {
             <h2 className="public-name">{data.displayName}</h2>
             <p className="public-handle">@{data.username}</p>
 
+            {data.tier && (
+              <p className="public-tier">{data.tier.emoji} {data.tier.name}</p>
+            )}
+
             <div className="public-stats">
               <div><b>{data.bestRank ? `#${data.bestRank}` : '–'}</b><small>BEST RANK</small></div>
-              <div><b>{data.totalVotes.toLocaleString()}</b><small>TOTAL VOTES</small></div>
-              <div><b>{data.photoCount}</b><small>PHOTOS</small></div>
+              <div><b>{(data.totalWins ?? 0).toLocaleString()}</b><small>VOTES RECEIVED</small></div>
+              <div><b>{data.winRate ?? 0}%</b><small>WIN RATE</small></div>
             </div>
+
+            {data.achievements && data.achievements.length > 0 && (
+              <div className="public-ach">
+                {data.achievements.map((name) => (
+                  <span key={name}>🏅 {name}</span>
+                ))}
+              </div>
+            )}
 
             {data.photos.length > 0 && (
               <div className="public-photos">

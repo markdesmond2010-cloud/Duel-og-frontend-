@@ -1251,3 +1251,83 @@ td {
 }
 .pic-option:active { border-color: #cc5de8; }
 .pic-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+
+/* ===== Landing page ===== */
+.landing {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff6b6b 0%, #cc5de8 100%);
+  padding: 14px 14px 40px;
+  box-sizing: border-box;
+  color: white;
+}
+.landing > * { max-width: 720px; margin-left: auto; margin-right: auto; }
+.landing-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.landing-brand { font-size: 24px; font-weight: 900; }
+.landing-signin {
+  background: rgba(255,255,255,0.25);
+  border: none; color: white; font-weight: 700;
+  padding: 8px 16px; border-radius: 999px; font-size: 14px; cursor: pointer;
+}
+.landing-headline { font-size: 28px; font-weight: 900; line-height: 1.15; margin: 8px 0 4px; text-align: center; }
+.landing-sub { text-align: center; opacity: 0.95; margin: 0 0 16px; }
+.landing-hint { text-align: center; font-weight: 600; margin: 12px 0 4px; }
+.landing-empty { background: rgba(255,255,255,0.2); border-radius: 16px; padding: 24px; text-align: center; }
+.landing-section { margin-top: 22px; }
+.landing-section h3 { margin: 0 0 10px; font-size: 18px; }
+.trend-list { display: flex; flex-direction: column; gap: 8px; }
+.trend-item {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.2); border-radius: 14px; padding: 8px; cursor: pointer;
+}
+.trend-item img { width: 56px; height: 72px; object-fit: cover; border-radius: 10px; }
+.trend-vs { font-weight: 900; font-size: 13px; }
+.trend-votes { margin-left: auto; font-weight: 700; font-size: 13px; }
+.champ-row { display: flex; gap: 10px; }
+.champ-item { flex: 1; text-align: center; min-width: 0; }
+.champ-item small { display: block; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.champ-img { position: relative; aspect-ratio: 3 / 4; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.2); }
+.champ-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.champ-rank {
+  position: absolute; left: 6px; top: 6px; background: white; color: #9d2bd1;
+  font-weight: 800; font-size: 13px; padding: 2px 8px; border-radius: 999px;
+}
+.landing-cta {
+  display: block; width: 100%; max-width: 720px; margin-top: 24px; padding: 16px;
+  border: none; border-radius: 14px; background: white; color: #9d2bd1;
+  font-size: 17px; font-weight: 800; cursor: pointer;
+}
+
+/* ===== Auth extras ===== */
+.auth-back {
+  background: none; border: none; color: #9d2bd1; font-weight: 700;
+  font-size: 14px; padding: 0 0 8px; cursor: pointer;
+}
+.auth-notice {
+  background: #f3e8ff; color: #7b2cbf; font-weight: 600; font-size: 14px;
+  padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; text-align: center;
+}
+
+/* ===== Tier + achievements ===== */
+.tier-box { background: white; border-radius: 16px; padding: 16px; margin-top: 14px; color: #333; }
+.tier-line { font-size: 18px; margin-bottom: 8px; }
+.tier-line span { color: #888; font-size: 14px; }
+.tier-bar { height: 10px; background: #f0e6fa; border-radius: 999px; overflow: hidden; margin-bottom: 6px; }
+.tier-fill { height: 100%; background: linear-gradient(135deg, #ff6b6b, #a855f7); border-radius: 999px; }
+.tier-box small { color: #777; }
+.tier-note { font-size: 12px; color: #999; margin: 8px 0 0; }
+.ach-title { margin: 16px 0 8px; }
+.ach-list { display: flex; flex-direction: column; gap: 8px; }
+.ach {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px; background: #f5f5f5; color: #999;
+}
+.ach b { display: block; font-size: 14px; }
+.ach small { display: block; font-size: 12px; color: inherit; }
+.ach span { font-weight: 800; font-size: 13px; white-space: nowrap; }
+.ach.earned { background: #e9f9f0; color: #1e7e34; }
+
+/* ===== Public profile extras ===== */
+.public-tier { margin: -8px 0 14px; font-weight: 700; }
+.public-ach { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 16px; }
+.public-ach span { background: rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }

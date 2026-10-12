@@ -13,6 +13,7 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
   const [cardPhoto, setCardPhoto] = useState(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [bestRank, setBestRank] = useState(null);
+  const [ach, setAch] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -42,6 +43,15 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
       .then((d) => setBestRank(d ? d.bestRank : null))
       .catch(() => {});
   }, [user?.username, photos.length]);
+
+  // Tier + achievements (computed on the server)
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API_URL}/api/achievements`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setAch(d))
+      .catch(() => {});
+  }, [token, photos.length]);
 
   const totalWins = photos.reduce((sum, p) => sum + (p.wins || 0), 0);
   const totalBattles = photos.reduce((sum, p) => sum + (p.matchesPlayed || 0), 0);
@@ -260,6 +270,47 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
             </div>
           )}
         </div>
+
+        {ach && (
+          <div className="tier-box">
+            <div className="tier-line">
+              {ach.tier.emoji} <b>{ach.tier.name}</b>
+              <span> · {ach.tier.wins} {ach.tier.wins === 1 ? 'win' : 'wins'}</span>
+            </div>
+            {ach.tier.nextMin ? (
+              <>
+                <div className="tier-bar">
+                  <div
+                    className="tier-fill"
+                    style={{
+                      width: `${Math.min(100, ((ach.tier.wins - ach.tier.min) / (ach.tier.nextMin - ach.tier.min)) * 100)}%`
+                    }}
+                  />
+                </div>
+                <small>{ach.tier.nextMin - ach.tier.wins} more wins to reach {ach.tier.nextName}</small>
+              </>
+            ) : (
+              <small>You've reached the top tier!</small>
+            )}
+            <p className="tier-note">
+              Your tier grows with every vote you receive:{' '}
+              {ach.tiers.map((t) => `${t.name} ${t.min}+`).join(' · ')}
+            </p>
+
+            <h4 className="ach-title">🏅 Achievements</h4>
+            <div className="ach-list">
+              {ach.achievements.map((a) => (
+                <div key={a.id} className={`ach ${a.earned ? 'earned' : ''}`}>
+                  <div>
+                    <b>{a.name}</b>
+                    <small>{a.description}</small>
+                  </div>
+                  <span>{a.earned ? '✓' : `${a.current}/${a.target}`}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {pickerOpen && (
           <div className="modal-overlay" onClick={() => setPickerOpen(false)}>

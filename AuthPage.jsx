@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 // Turn on later when the numbers look impressive
 const SHOW_LIVE_STATS = false;
 
-export default function AuthPage({ onLogin }) {
-  const [mode, setMode] = useState(localStorage.getItem('duel_ref') ? 'signup' : 'login'); // 'login' or 'signup'
+export default function AuthPage({ onLogin, initialMode, notice, onBack }) {
+  const [mode, setMode] = useState(initialMode || (localStorage.getItem('duel_ref') ? 'signup' : 'login')); // 'login' or 'signup'
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -83,13 +83,17 @@ export default function AuthPage({ onLogin }) {
   return (
     <div className="auth-page">
       <div className="auth-container">
+        {onBack && (
+          <button className="auth-back" onClick={onBack}>← Back</button>
+        )}
+        {notice && <div className="auth-notice">{notice}</div>}
         <div className="auth-header">
           <h1>📸 DUEL</h1>
           <h2 className="auth-tagline">Which photo wins? You decide.</h2>
           <p className="auth-sub">Upload your best shot. Let the crowd rank it.</p>
         </div>
 
-        <div className="how-it-works">
+        <div className="how-it-works" style={{ display: onBack ? 'none' : undefined }}>
           <div className="how-step"><span>📤</span><b>Upload</b><small>your best shot</small></div>
           <div className="how-step"><span>🗳️</span><b>Duel</b><small>people pick winners</small></div>
           <div className="how-step"><span>🏆</span><b>Rank up</b><small>climb the board</small></div>
