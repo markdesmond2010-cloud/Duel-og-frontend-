@@ -11,6 +11,8 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [cardPhoto, setCardPhoto] = useState(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [bestRank, setBestRank] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -29,6 +31,39 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
       console.error('Failed to load photos:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Best rank comes from the public profile endpoint
+  useEffect(() => {
+    if (!user?.username) return;
+    fetch(`${API_URL}/api/public/profile/${encodeURIComponent(user.username)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setBestRank(d ? d.bestRank : null))
+      .catch(() => {});
+  }, [user?.username, photos.length]);
+
+  const totalWins = photos.reduce((sum, p) => sum + (p.wins || 0), 0);
+  const totalBattles = photos.reduce((sum, p) => sum + (p.matchesPlayed || 0), 0);
+  const winRate = totalBattles ? Math.round((totalWins / totalBattles) * 100) : 0;
+
+  const setProfilePicture = async (photoId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/profile/picture`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ photoId })
+      });
+      if (!res.ok) throw new Error('Update failed');
+      setPickerOpen(false);
+      setMessage('✅ Profile picture updated');
+      setTimeout(() => setMessage(''), 2000);
+      if (onProfileUpdated) onProfileUpdated();
+    } catch (err) {
+      setMessage('❌ Could not update profile picture');
     }
   };
 
@@ -109,6 +144,9 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
               {user?.displayName?.charAt(0).toUpperCase() || '?'}
             </div>
           )}
+          <button className="change-pic-btn" onClick={() => setPickerOpen(true)}>
+            📷 Change profile picture
+          </button>
 
           {!editing ? (
             <>
@@ -166,6 +204,13 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
 
           {message && <div className="profile-message">{message}</div>}
 
+          <div className="profile-summary">
+            <div><b>{bestRank ? `#${bestRank}` : '–'}</b><small>BEST RANK</small></div>
+            <div><b>{totalBattles}</b><small>BATTLES</small></div>
+            <div><b>{totalWins}</b><small>WINS</small></div>
+            <div><b>{winRate}%</b><small>WIN RATE</small></div>
+          </div>
+
           <button className="btn-share" onClick={handleShare}>
             👋 Invite friends
           </button>
@@ -215,6 +260,34 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
             </div>
           )}
         </div>
+
+        {pickerOpen && (
+          <div className="modal-overlay" onClick={() => setPickerOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Choose your profile picture</h3>
+              {photos.length === 0 ? (
+                <p>Upload a photo first, then you can use it here.</p>
+              ) : (
+                <>
+                  <p>Pick one of your uploaded photos.</p>
+                  <div className="pic-picker">
+                    {photos.map((ph) => (
+                      <button key={ph.id} className="pic-option" onClick={() => setProfilePicture(ph.id)}>
+                        <img src={ph.imageUrl} alt={ph.title} />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              <button className="modal-btn" onClick={() => setProfilePicture(null)}>
+                Use a letter avatar instead
+              </button>
+              <button className="modal-cancel" onClick={() => setPickerOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         {cardPhoto && (
           <ShareCard photo={cardPhoto} user={user} onClose={() => setCardPhoto(null)} />
