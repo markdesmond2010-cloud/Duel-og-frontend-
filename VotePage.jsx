@@ -9,22 +9,6 @@ const QUESTIONS = {
   photography: { q: 'Which photo is more creative?', hint: 'Tap the photo you find more creative' }
 };
 
-const INTRO_KEY = 'duel_intro_seen';
-const readIntroSeen = () => {
-  try {
-    return localStorage.getItem(INTRO_KEY) === '1';
-  } catch (e) {
-    return false;
-  }
-};
-
-const REPORT_REASONS = [
-  'Inappropriate or explicit',
-  'Not their photo / stolen',
-  'Spam or fake',
-  'Other'
-];
-
 export default function VotePage({ token }) {
   const [matchup, setMatchup] = useState(null);
   const [emptyCode, setEmptyCode] = useState('');
@@ -36,7 +20,6 @@ export default function VotePage({ token }) {
   const [reportTarget, setReportTarget] = useState(null);
   const [category, setCategory] = useState('');
   const [daily, setDaily] = useState(null);
-  const [showIntro, setShowIntro] = useState(() => !readIntroSeen());
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const auth = { Authorization: `Bearer ${token}` };
@@ -152,36 +135,12 @@ export default function VotePage({ token }) {
     }
   };
 
-  const closeIntro = () => {
-    setShowIntro(false);
-    try {
-      localStorage.setItem(INTRO_KEY, '1');
-    } catch (e) {}
-  };
-
-  const question = QUESTIONS[category] || QUESTIONS[''];
-
-  const intro = showIntro ? (
-    <div className="intro-card">
-      <div className="intro-title">👋 Welcome to Duel</div>
-      <p className="intro-lead">
-        Duel is a photo contest where <b>people like you decide the winner</b>. Your votes rank everyone's photos.
-      </p>
-      <ol className="intro-steps">
-        <li><span>1</span> Two photos show up side by side</li>
-        <li><span>2</span> Tap the one you think is <b>better</b>: the better selfie, outfit or photo</li>
-        <li><span>3</span> Your vote pushes the winner up the <b>Top</b> ranking</li>
-      </ol>
-      <p className="intro-note">No wrong answers. Just pick the one you like more.</p>
-      <button className="intro-btn" onClick={closeIntro}>Got it, let's vote</button>
-    </div>
-  ) : (
-    <button className="intro-link" onClick={() => setShowIntro(true)}>ℹ️ How does this work?</button>
-  );
+  // Follow the battle on screen: a selfie battle asks "Which selfie is better?" even on the All tab
+  const battleCategory = (matchup && (matchup.photoA.category || 'selfies')) || category || '';
+  const question = QUESTIONS[battleCategory] || QUESTIONS[''];
 
   const filters = (
     <>
-      {intro}
       {daily && (
         <div className={`daily-card ${daily.done ? 'done' : ''}`}>
           <div className="daily-top">
@@ -278,7 +237,7 @@ export default function VotePage({ token }) {
     <div className="page vote-page">
       {filters}
       <h2 className="battle-title">{question.q}</h2>
-      <p className="battle-sub">Your vote helps decide who ranks higher</p>
+      <p className="battle-sub">Your vote decides who ranks #1</p>
 
       <div className="battle">
         {renderSide(matchup.photoA, 'A')}

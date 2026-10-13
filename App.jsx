@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import './Nav.css';
+import Tour, { TOUR_STEPS } from './Tour';
 import AuthPage from './AuthPage';
 import VotePage from './VotePage';
 import UploadPage from './UploadPage';
@@ -72,6 +73,7 @@ function MainApp() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('duel_token'));
   const [stats, setStats] = useState({ totalPhotos: 0, totalUsers: 0 });
+  const [tourStep, setTourStep] = useState(null); // null = tour closed
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -137,6 +139,33 @@ function MainApp() {
     }
   };
 
+  // First-time tour: show once per account on this device
+  const tourKey = user?.id ? `duel_tour_done_${user.id}` : null;
+  useEffect(() => {
+    if (!tourKey) return;
+    let seen = false;
+    try {
+      seen = localStorage.getItem(tourKey) === '1';
+    } catch (e) {}
+    if (!seen) setTourStep(0);
+  }, [tourKey]);
+
+  // Move to the page each tour step talks about
+  useEffect(() => {
+    if (tourStep !== null && TOUR_STEPS[tourStep]) setCurrentPage(TOUR_STEPS[tourStep].page);
+  }, [tourStep]);
+
+  const closeTour = () => {
+    setTourStep(null);
+    setCurrentPage('vote');
+    if (tourKey) {
+      try {
+        localStorage.setItem(tourKey, '1');
+      } catch (e) {}
+    }
+  };
+  const tourTab = tourStep !== null ? TOUR_STEPS[tourStep]?.tab : null;
+
   const handleLogin = (authToken, userData) => {
     setToken(authToken);
     setUser(userData);
@@ -181,6 +210,7 @@ function MainApp() {
       <header className="header">
         <div className="header-content">
           <h1 className="logo">📸 DUEL</h1>
+          <button className="tour-help" onClick={() => setTourStep(0)} aria-label="How Duel works">?</button>
         </div>
       </header>
 
@@ -194,27 +224,27 @@ function MainApp() {
       </main>
 
       {/* Bottom navigation */}
-      <nav className="bottom-nav">
+      <nav className={`bottom-nav ${tourStep !== null ? 'tour-active' : ''}`}>
         <button
-          className={`bn-btn ${currentPage === 'vote' ? 'active' : ''}`}
+          className={`bn-btn ${currentPage === 'vote' ? 'active' : ''} ${tourTab === 'vote' ? 'tour-spot' : ''}`}
           onClick={() => setCurrentPage('vote')}
         >
           <NavIcon name="vote" />Vote
         </button>
         <button
-          className={`bn-btn ${currentPage === 'upload' ? 'active' : ''}`}
+          className={`bn-btn ${currentPage === 'upload' ? 'active' : ''} ${tourTab === 'upload' ? 'tour-spot' : ''}`}
           onClick={() => setCurrentPage('upload')}
         >
           <NavIcon name="upload" />Upload
         </button>
         <button
-          className={`bn-btn ${currentPage === 'leaderboard' ? 'active' : ''}`}
+          className={`bn-btn ${currentPage === 'leaderboard' ? 'active' : ''} ${tourTab === 'leaderboard' ? 'tour-spot' : ''}`}
           onClick={() => setCurrentPage('leaderboard')}
         >
           <NavIcon name="top" />Top
         </button>
         <button
-          className={`bn-btn ${currentPage === 'profile' ? 'active' : ''}`}
+          className={`bn-btn ${currentPage === 'profile' ? 'active' : ''} ${tourTab === 'profile' ? 'tour-spot' : ''}`}
           onClick={() => setCurrentPage('profile')}
         >
           <NavIcon name="profile" />Profile
@@ -229,6 +259,15 @@ function MainApp() {
           </button>
         )}
       </nav>
+
+      {tourStep !== null && (
+        <Tour
+          step={tourStep}
+          onNext={() => setTourStep((n) => Math.min(n + 1, TOUR_STEPS.length - 1))}
+          onBack={() => setTourStep((n) => Math.max(n - 1, 0))}
+          onClose={closeTour}
+        />
+      )}
     </div>
   );
 }
