@@ -1,0 +1,38 @@
+/* Vote page: first-time explainer + question prompt */
+.intro-card {
+  background: #fff;
+  color: #333;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+.intro-title { font-size: 18px; font-weight: 900; color: #9d2bd1; margin-bottom: 4px; }
+.intro-lead { font-size: 14px; line-height: 1.4; margin: 0 0 10px; color: #444; }
+.intro-steps { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; }
+.intro-steps li {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; line-height: 1.3; color: #333;
+  background: #faf5ff; border-radius: 12px; padding: 8px 10px;
+}
+.intro-steps li span {
+  flex: 0 0 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff; font-weight: 800; font-size: 13px;
+}
+.intro-note { font-size: 12px; color: #777; margin: 0 0 10px; }
+.intro-btn {
+  width: 100%; border: none; border-radius: 999px; padding: 11px 14px;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff; font-weight: 800; font-size: 15px; cursor: pointer;
+}
+.intro-link {
+  display: block; margin: 0 auto 6px; border: none; background: transparent;
+  color: #fff; font-weight: 700; font-size: 13px; text-decoration: underline; cursor: pointer;
+}
+.battle-title { text-transform: none; letter-spacing: 0; }
+.battle-sub {
+  text-align: center; color: #fff; opacity: 0.9;
+  font-size: 13px; margin: -6px 0 12px;
+}
