@@ -1,0 +1,43 @@
+/* "Install Duel" banner */
+.install-card {
+  position: fixed;
+  z-index: 250; /* above the bottom nav (200), below the tour (300) */
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #333;
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  animation: install-in 0.25s ease-out;
+}
+.install-card.above-nav { bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+@keyframes install-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.install-icon {
+  flex: 0 0 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff; font-weight: 900; font-size: 22px;
+}
+.install-body { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.35; color: #555; }
+.install-body b { display: block; font-size: 14px; color: #333; }
+.install-body span b { display: inline; font-size: inherit; color: #9d2bd1; }
+.install-share { width: 14px; height: 14px; vertical-align: -2px; fill: none; stroke: #9d2bd1; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.install-actions { display: flex; flex-direction: column; gap: 4px; }
+.install-yes {
+  border: none; border-radius: 999px; padding: 7px 14px;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff; font-weight: 800; font-size: 13px; cursor: pointer;
+}
+.install-no {
+  border: none; background: transparent; color: #888; font-weight: 600; font-size: 12px; padding: 3px; cursor: pointer;
+}

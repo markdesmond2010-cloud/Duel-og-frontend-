@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import './Nav.css';
 import Tour, { TOUR_STEPS } from './Tour';
+import InstallPrompt from './InstallPrompt';
 import AuthPage from './AuthPage';
 import VotePage from './VotePage';
 import UploadPage from './UploadPage';
@@ -185,13 +186,16 @@ function MainApp() {
   if (!token) {
     if (authView === 'landing') {
       return (
-        <LandingPage
-          onJoin={(mode, notice) => {
-            setAuthMode(mode || 'login');
-            setAuthNotice(notice || '');
-            setAuthView('auth');
-          }}
-        />
+        <>
+          <LandingPage
+            onJoin={(mode, notice) => {
+              setAuthMode(mode || 'login');
+              setAuthNotice(notice || '');
+              setAuthView('auth');
+            }}
+          />
+          <InstallPrompt />
+        </>
       );
     }
     return (
@@ -268,6 +272,8 @@ function MainApp() {
           onClose={closeTour}
         />
       )}
+
+      <InstallPrompt aboveNav paused={tourStep !== null} />
     </div>
   );
 }
