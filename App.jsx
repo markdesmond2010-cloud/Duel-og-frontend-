@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import './Nav.css';
 import AuthPage from './AuthPage';
 import VotePage from './VotePage';
 import UploadPage from './UploadPage';
@@ -24,6 +25,44 @@ try {
   const ref = params.get('ref') || (profileMatch ? decodeURIComponent(profileMatch[1]) : null);
   if (ref && !localStorage.getItem('duel_token')) localStorage.setItem('duel_ref', ref);
 } catch (e) {}
+
+
+// Clean line icons for the bottom navigation (inherit the tab colour)
+const NAV_ICONS = {
+  vote: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="4" />
+      <path d="M8 12.5l3 3 5-6" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 16V4M7 9l5-5 5 5" />
+      <path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" />
+    </>
+  ),
+  top: (
+    <>
+      <path d="M8 4h8v5a4 4 0 01-8 0V4z" />
+      <path d="M8 6H5v1a3 3 0 003 3M16 6h3v1a3 3 0 01-3 3M12 13v4M9 20h6M10 17h4" />
+    </>
+  ),
+  profile: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0116 0" />
+    </>
+  ),
+  admin: <path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z" />
+};
+
+function NavIcon({ name }) {
+  return (
+    <span>
+      <svg viewBox="0 0 24 24" aria-hidden="true">{NAV_ICONS[name]}</svg>
+    </span>
+  );
+}
 
 function MainApp() {
   const [currentPage, setCurrentPage] = useState('auth');
@@ -160,25 +199,25 @@ function MainApp() {
           className={`bn-btn ${currentPage === 'vote' ? 'active' : ''}`}
           onClick={() => setCurrentPage('vote')}
         >
-          <span>🗳️</span>Vote
+          <NavIcon name="vote" />Vote
         </button>
         <button
           className={`bn-btn ${currentPage === 'upload' ? 'active' : ''}`}
           onClick={() => setCurrentPage('upload')}
         >
-          <span>📸</span>Upload
+          <NavIcon name="upload" />Upload
         </button>
         <button
           className={`bn-btn ${currentPage === 'leaderboard' ? 'active' : ''}`}
           onClick={() => setCurrentPage('leaderboard')}
         >
-          <span>🏆</span>Top
+          <NavIcon name="top" />Top
         </button>
         <button
           className={`bn-btn ${currentPage === 'profile' ? 'active' : ''}`}
           onClick={() => setCurrentPage('profile')}
         >
-          <span>👤</span>Profile
+          <NavIcon name="profile" />Profile
           {user?.pendingChallenges > 0 && <i className="bn-dot" />}
         </button>
         {user?.isAdmin && (
@@ -186,7 +225,7 @@ function MainApp() {
             className={`bn-btn ${currentPage === 'admin' ? 'active' : ''}`}
             onClick={() => setCurrentPage('admin')}
           >
-            <span>🛡️</span>Admin
+            <NavIcon name="admin" />Admin
           </button>
         )}
       </nav>

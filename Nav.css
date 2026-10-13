@@ -1,0 +1,27 @@
+/* Mature bottom navigation: line icons, active indicator */
+.bottom-nav { box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.06), 0 -6px 16px rgba(0, 0, 0, 0.06); }
+.bn-btn { position: relative; gap: 3px; font-weight: 600; letter-spacing: 0.2px; color: #8a8a94; }
+.bn-btn span { display: flex; height: 24px; font-size: 0; }
+.bn-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bn-btn.active { color: #9d2bd1; }
+.bn-btn.active span { transform: none; }
+.bn-btn.active svg { stroke-width: 2.2; }
+.bn-btn.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 28px;
+  height: 3px;
+  margin-left: -14px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+}
