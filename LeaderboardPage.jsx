@@ -109,22 +109,22 @@ export default function LeaderboardPage() {
         {leaderboard.length >= 2 && (
           <div className="podium-place second">
             <div className="medal">🥈</div>
-            <img src={leaderboard[1].imageUrl} alt={leaderboard[1].title} />
-            <h4>{leaderboard[1].title}</h4>
+            <img src={leaderboard[1].imageUrl} alt={leaderboard[1].displayName || leaderboard[1].username} />
+            <h4>{leaderboard[1].displayName || leaderboard[1].username}</h4>
             <p>{metric(leaderboard[1])}</p>
           </div>
         )}
         <div className="podium-place first">
           <div className="medal">🥇</div>
-          <img src={leaderboard[0].imageUrl} alt={leaderboard[0].title} />
-          <h4>{leaderboard[0].title}</h4>
+          <img src={leaderboard[0].imageUrl} alt={leaderboard[0].displayName || leaderboard[0].username} />
+          <h4>{leaderboard[0].displayName || leaderboard[0].username}</h4>
           <p>{metric(leaderboard[0])}</p>
         </div>
         {leaderboard.length >= 3 && (
           <div className="podium-place third">
             <div className="medal">🥉</div>
-            <img src={leaderboard[2].imageUrl} alt={leaderboard[2].title} />
-            <h4>{leaderboard[2].title}</h4>
+            <img src={leaderboard[2].imageUrl} alt={leaderboard[2].displayName || leaderboard[2].username} />
+            <h4>{leaderboard[2].displayName || leaderboard[2].username}</h4>
             <p>{metric(leaderboard[2])}</p>
           </div>
         )}
@@ -153,8 +153,8 @@ export default function LeaderboardPage() {
               >
                 <td>#{photo.rank}</td>
                 <td>
-                  <img src={photo.imageUrl} alt={photo.title} className="thumbnail" />
-                  <span>{photo.title}</span>
+                  <img src={photo.imageUrl} alt={photo.displayName || photo.username} className="thumbnail" />
+                  <span>{photo.displayName || photo.username}</span>
                   {photo.provisional && <em className="new-tag">NEW</em>}
                 </td>
                 <td className="rating">{scope === 'all' ? Math.round(photo.rating) : photo.wins}</td>
@@ -172,10 +172,10 @@ export default function LeaderboardPage() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedPhoto(null)}>✕</button>
 
-            <img src={selectedPhoto.imageUrl} alt={selectedPhoto.title} className="modal-image" />
+            <img src={selectedPhoto.imageUrl} alt={selectedPhoto.displayName || selectedPhoto.username} className="modal-image" />
 
             <div className="modal-info">
-              <h2>#{selectedPhoto.rank} - {selectedPhoto.title}</h2>
+              <h2>#{selectedPhoto.rank} - {selectedPhoto.displayName || selectedPhoto.username}</h2>
               <p className="modal-uploader">
                 by {selectedPhoto.displayName} · {categoryLabel(selectedPhoto.category)}
               </p>
