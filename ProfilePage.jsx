@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ShareCard from './ShareCard';
+import ChallengesPanel from './ChallengesPanel';
+import { categoryLabel } from './categories';
 
 export default function ProfilePage({ token, user, onLogout, onPhotosChanged, onProfileUpdated }) {
   const [photos, setPhotos] = useState([]);
@@ -248,6 +250,7 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
                   <img src={photo.imageUrl} alt={photo.title} />
                   <div className="photo-grid-info">
                     <p className="photo-grid-title">{photo.title}</p>
+                    <p className="cat-tag">{categoryLabel(photo.category)}</p>
                     <p className="photo-grid-rating">Rating: {Math.round(photo.rating)}</p>
                     <p className="photo-grid-record">
                       Record: {photo.wins} {photo.wins === 1 ? 'win' : 'wins'} · {photo.losses} {photo.losses === 1 ? 'loss' : 'losses'}
@@ -311,6 +314,8 @@ export default function ProfilePage({ token, user, onLogout, onPhotosChanged, on
             </div>
           </div>
         )}
+
+        <ChallengesPanel token={token} photos={photos} onChanged={onProfileUpdated} />
 
         {pickerOpen && (
           <div className="modal-overlay" onClick={() => setPickerOpen(false)}>

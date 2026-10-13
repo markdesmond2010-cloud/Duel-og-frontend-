@@ -8,9 +8,15 @@ import ProfilePage from './ProfilePage';
 import AdminPage from './AdminPage';
 import PublicProfile from './PublicProfile';
 import LandingPage from './LandingPage';
+import PhotoPage from './PhotoPage';
+import BattlePage from './BattlePage';
 
 // Public profile links look like /u/<username>
 const profileMatch = window.location.pathname.match(/^\/u\/([^/]+)\/?$/);
+
+// Photo and battle links look like /p/<photoId> and /b/<battleId>
+const photoMatch = window.location.pathname.match(/^\/p\/([^/]+)\/?$/);
+const battleMatch = window.location.pathname.match(/^\/b\/([^/]+)\/?$/);
 
 // Remember who invited this visitor (?ref=username or /u/username) until they sign up
 try {
@@ -60,7 +66,10 @@ function MainApp() {
 
   // Keep the photo counter fresh when switching pages
   useEffect(() => {
-    if (token) fetchStats();
+    if (token) {
+      fetchStats();
+      fetchCurrentUser();
+    }
   }, [currentPage]);
 
   const fetchCurrentUser = async () => {
@@ -170,6 +179,7 @@ function MainApp() {
           onClick={() => setCurrentPage('profile')}
         >
           <span>👤</span>Profile
+          {user?.pendingChallenges > 0 && <i className="bn-dot" />}
         </button>
         {user?.isAdmin && (
           <button
@@ -185,6 +195,17 @@ function MainApp() {
 }
 
 export default function App() {
+  if (photoMatch) {
+    return (
+      <PhotoPage
+        photoId={decodeURIComponent(photoMatch[1])}
+        loggedIn={!!localStorage.getItem('duel_token')}
+      />
+    );
+  }
+  if (battleMatch) {
+    return <BattlePage battleId={decodeURIComponent(battleMatch[1])} />;
+  }
   if (profileMatch) {
     return (
       <PublicProfile

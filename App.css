@@ -1331,3 +1331,79 @@ td {
 .public-tier { margin: -8px 0 14px; font-weight: 700; }
 .public-ach { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 16px; }
 .public-ach span { background: rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+
+
+/* ===== Categories, chips ===== */
+.cat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.cat-chip {
+  border: none; border-radius: 999px; padding: 8px 12px;
+  background: rgba(255,255,255,0.35); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer;
+}
+.cat-chip.active { background: #fff; color: #9d2bd1; }
+.upload-form .cat-chip { background: #f3f3f3; color: #555; }
+.upload-form .cat-chip.active { background: #f3e8ff; color: #7b2cbf; box-shadow: 0 0 0 2px #cc5de8 inset; }
+.lb-note { color: #fff; opacity: 0.9; font-size: 12px; margin: 4px 0 10px; text-align: center; }
+.new-tag {
+  display: inline-block; margin-left: 6px; font-style: normal; font-size: 10px; font-weight: 800;
+  background: #1fbf75; color: #fff; padding: 1px 6px; border-radius: 999px;
+}
+.cat-tag { margin: 0; font-size: 11px; color: #9d2bd1; }
+
+/* ===== Daily challenge ===== */
+.daily-card { background: white; color: #333; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; }
+.daily-card.done { background: #e9f9f0; }
+.daily-top { display: flex; justify-content: space-between; font-size: 14px; }
+.daily-top span { font-size: 12px; color: #d9480f; font-weight: 700; }
+.daily-text { font-size: 13px; margin: 4px 0 6px; color: #555; }
+.daily-bar { height: 8px; background: #f0e6fa; border-radius: 999px; overflow: hidden; }
+.daily-bar div { height: 100%; background: linear-gradient(135deg, #ff6b6b, #a855f7); }
+.daily-play {
+  margin-top: 8px; border: none; background: #f3e8ff; color: #7b2cbf;
+  border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: 12px; cursor: pointer;
+}
+
+/* ===== Photo + battle pages ===== */
+.photo-page-img { position: relative; border-radius: 18px; overflow: hidden; background: rgba(255,255,255,0.2); margin-bottom: 12px; }
+.photo-page-img img { width: 100%; max-height: 62vh; object-fit: cover; display: block; }
+.public-rank.big { font-size: 15px; padding: 4px 12px; left: 10px; bottom: 10px; }
+.public-handle a { color: white; font-weight: 700; }
+.photo-label { font-weight: 800; letter-spacing: 1px; margin: 0 0 14px; }
+.public-cta.alt { background: rgba(255,255,255,0.25); color: white; }
+.battle-time { text-align: center; font-weight: 800; margin: 0 0 10px; }
+.battle-pct { font-size: 26px; font-weight: 900; color: #9d2bd1; }
+.battle-meta small { color: #888; }
+.landing-battle { margin-bottom: 12px; }
+
+/* ===== Challenges ===== */
+.challenge-input {
+  width: 100%; box-sizing: border-box; padding: 12px; margin: 6px 0 10px;
+  border: 2px solid #eee; border-radius: 10px; font-size: 16px;
+}
+.pic-option.chosen { border-color: #cc5de8; }
+.chal-group { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.chal-item { display: flex; gap: 8px; align-items: center; background: #faf5ff; border-radius: 12px; padding: 8px; }
+.chal-item img { width: 52px; height: 66px; object-fit: cover; border-radius: 8px; }
+.chal-text { flex: 1; font-size: 13px; color: #333; }
+.chal-score { font-size: 12px; color: #777; margin: 2px 0; }
+.chal-actions { display: flex; gap: 6px; margin-top: 6px; }
+.chal-accept, .chal-decline { border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.chal-accept { background: #9d2bd1; color: white; }
+.chal-decline { background: #eee; color: #555; }
+.bn-btn { position: relative; }
+.bn-dot { position: absolute; top: 8px; right: calc(50% - 20px); width: 10px; height: 10px; background: #e03131; border-radius: 50%; }
+
+/* ===== Admin analytics ===== */
+.admin-ban {
+  width: 100%; margin-top: 8px; padding: 10px; border: 1px solid #e03131; background: white;
+  color: #e03131; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.an-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.an-grid div { background: white; border-radius: 12px; padding: 12px 8px; text-align: center; color: #333; }
+.an-grid b { display: block; font-size: 24px; color: #9d2bd1; }
+.an-grid small { font-size: 10px; color: #888; letter-spacing: 0.3px; }
+.an-bars { display: flex; gap: 6px; align-items: flex-end; height: 130px; }
+.an-bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.an-bar div { width: 100%; background: linear-gradient(180deg, #a855f7, #ff6b6b); border-radius: 6px 6px 0 0; min-height: 3px; }
+.an-bar small { font-size: 10px; color: #888; }
+.an-bar em { font-size: 11px; font-style: normal; font-weight: 700; color: #555; }
+.an-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; }

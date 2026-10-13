@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { ChallengeModal } from './ChallengesPanel';
 
 export default function PublicProfile({ username, loggedIn }) {
   const [data, setData] = useState(null);
   const [state, setState] = useState('loading'); // loading | ready | missing | error
+  const [me, setMe] = useState(null);
+  const [challenging, setChallenging] = useState(false);
+  const [sentNote, setSentNote] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -16,6 +20,15 @@ export default function PublicProfile({ username, loggedIn }) {
       })
       .catch(() => setState('error'));
   }, [username]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('duel_token');
+    if (!token) return;
+    fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setMe(d))
+      .catch(() => {});
+  }, []);
 
   const goHome = () => {
     window.location.href = '/';
@@ -72,9 +85,25 @@ export default function PublicProfile({ username, loggedIn }) {
               </div>
             )}
 
+            {loggedIn && me && me.username.toLowerCase() !== data.username.toLowerCase() && (
+              <button className="public-cta alt" onClick={() => setChallenging(true)} style={{ marginBottom: 8 }}>
+                ⚔️ Challenge @{data.username}
+              </button>
+            )}
+            {sentNote && <p className="battle-status">{sentNote}</p>}
+
             <button className="public-cta" onClick={goHome}>
               {loggedIn ? '🗳️ Open DUEL' : '🔥 Join DUEL and vote'}
             </button>
+
+            {challenging && (
+              <ChallengeModal
+                token={localStorage.getItem('duel_token')}
+                toUsername={data.username}
+                onClose={() => setChallenging(false)}
+                onSent={() => setSentNote('✅ Challenge sent!')}
+              />
+            )}
           </>
         )}
       </div>

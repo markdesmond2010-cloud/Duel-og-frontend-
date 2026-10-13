@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { CATEGORIES } from './categories';
 
 export default function UploadPage({ token, onUploadSuccess }) {
   const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('selfies');
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,11 +63,15 @@ export default function UploadPage({ token, onUploadSuccess }) {
         body: JSON.stringify({
           title,
           imageUrl,
-          cloudinaryId
+          cloudinaryId,
+          category
         })
       });
 
-      if (!res.ok) throw new Error('Failed to save photo');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to save photo');
+      }
 
       setMessageType('success');
       setMessage('✅ Photo uploaded! Starting rating: 1600');
@@ -123,6 +129,24 @@ export default function UploadPage({ token, onUploadSuccess }) {
                 maxLength={100}
                 disabled={loading}
               />
+            </div>
+
+            {/* Category */}
+            <div className="form-group">
+              <label>Category *</label>
+              <div className="cat-chips">
+                {CATEGORIES.map((c) => (
+                  <button
+                    type="button"
+                    key={c.key}
+                    className={`cat-chip ${category === c.key ? 'active' : ''}`}
+                    onClick={() => setCategory(c.key)}
+                    disabled={loading}
+                  >
+                    {c.emoji} {c.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Message */}
