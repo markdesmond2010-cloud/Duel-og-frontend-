@@ -1,0 +1,16 @@
+{
+  "name": "DUEL - Which photo wins?",
+  "short_name": "DUEL",
+  "description": "Two photos. One winner. Your vote decides.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#cc5de8",
+  "theme_color": "#cc5de8",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

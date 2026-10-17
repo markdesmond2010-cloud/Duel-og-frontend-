@@ -49,6 +49,7 @@ export default function LandingPage({ onJoin }) {
 
       <h1 className="landing-headline">Which photo wins? You decide.</h1>
       <p className="landing-sub">Two photos. One winner. Your vote decides.</p>
+      <p className="landing-contender">Got a photo? You're a contender.</p>
 
       {battle ? (
         <>
@@ -76,7 +77,6 @@ export default function LandingPage({ onJoin }) {
                 <img src={t.photoA.imageUrl} alt="" />
                 <span className="trend-vs">VS</span>
                 <img src={t.photoB.imageUrl} alt="" />
-                <span className="trend-votes">{t.votes} {t.votes === 1 ? 'vote' : 'votes'}</span>
               </div>
             ))}
           </div>

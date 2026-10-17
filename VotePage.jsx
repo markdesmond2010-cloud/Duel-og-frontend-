@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { CATEGORIES } from './categories';
-import './VotePage.css';
 
-const QUESTIONS = {
-  '': { q: 'Which photo is better?', hint: 'Tap the one you like more' },
-  fashion: { q: 'Which outfit looks better?', hint: 'Tap the outfit you like more' },
-  selfies: { q: 'Which selfie is better?', hint: 'Tap the selfie you like more' },
-  photography: { q: 'Which photo is more creative?', hint: 'Tap the photo you find more creative' }
-};
+const REPORT_REASONS = [
+  'Inappropriate or explicit',
+  'Not their photo / stolen',
+  'Spam or fake',
+  'Other'
+];
 
 export default function VotePage({ token }) {
   const [matchup, setMatchup] = useState(null);
@@ -102,6 +101,13 @@ export default function VotePage({ token }) {
       }
 
       setStatus('✅ Vote recorded');
+      try {
+        const n = (parseInt(localStorage.getItem('duel_votes_cast') || '0', 10) || 0) + 1;
+        localStorage.setItem('duel_votes_cast', String(n));
+      } catch (e) {}
+      window.dispatchEvent(
+        new CustomEvent('duel-clout', { detail: { amount: data.cloutEarned || 0, daily: !!data.dailyComplete } })
+      );
       if (data.pairVotes && data.pairVotes.total >= 3) {
         const pct = Math.round((data.pairVotes.winnerVotes / data.pairVotes.total) * 100);
         setAgree(`${pct}% of voters picked the same photo`);
@@ -134,10 +140,6 @@ export default function VotePage({ token }) {
       setStatus('❌ Could not send report. Try again.');
     }
   };
-
-  // Follow the battle on screen: a selfie battle asks "Which selfie is better?" even on the All tab
-  const battleCategory = (matchup && (matchup.photoA.category || 'selfies')) || category || '';
-  const question = QUESTIONS[battleCategory] || QUESTIONS[''];
 
   const filters = (
     <>
@@ -236,8 +238,7 @@ export default function VotePage({ token }) {
   return (
     <div className="page vote-page">
       {filters}
-      <h2 className="battle-title">{question.q}</h2>
-      <p className="battle-sub">Your vote decides who ranks #1</p>
+      <h2 className="battle-title">CHOOSE THE WINNER</h2>
 
       <div className="battle">
         {renderSide(matchup.photoA, 'A')}
@@ -246,7 +247,7 @@ export default function VotePage({ token }) {
       </div>
 
       <div className="battle-status">
-        {status || question.hint}
+        {status || 'Tap a photo to vote'}
         {agree && <div className="battle-agree">{agree}</div>}
       </div>
 

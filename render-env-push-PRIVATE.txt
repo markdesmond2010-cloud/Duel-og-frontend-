@@ -1,0 +1,8 @@
+VAPID_PUBLIC_KEY=BD0FNHGuasaYUS4FNHc8F33fBKu0DHYk9pjuIyNPdENwhcsRIucboGVTAbo7Rdn1dT09O39cAh25cihqNamxtU4
+VAPID_PRIVATE_KEY=Dve4aYoNjxervo3yJmGSRA0Ng3Kz8QLqrdmGXMWBXoo
+VAPID_SUBJECT=mailto:markdesmond2010@gmail.com
+CRON_SECRET=b34550c85db1c0ac6e118788d72eb9f20435
+REMINDER_UTC_OFFSET=1
+
+# Reminder link for cron-job.org (do not put this line in Render):
+# https://duel-ib0w.onrender.com/api/cron/reminders?key=b34550c85db1c0ac6e118788d72eb9f20435

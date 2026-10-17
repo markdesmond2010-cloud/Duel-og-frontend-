@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import './Nav.css';
-import Tour, { TOUR_STEPS } from './Tour';
-import InstallPrompt from './InstallPrompt';
 import AuthPage from './AuthPage';
 import VotePage from './VotePage';
 import UploadPage from './UploadPage';
@@ -13,6 +10,8 @@ import PublicProfile from './PublicProfile';
 import LandingPage from './LandingPage';
 import PhotoPage from './PhotoPage';
 import BattlePage from './BattlePage';
+import { InstallPrompt, Tips, NotificationsPanel, WelcomeModal, CloutToast, PushPrompt } from './Engage';
+import { registerSW, syncPush } from './push';
 
 // Public profile links look like /u/<username>
 const profileMatch = window.location.pathname.match(/^\/u\/([^/]+)\/?$/);
@@ -28,44 +27,6 @@ try {
   if (ref && !localStorage.getItem('duel_token')) localStorage.setItem('duel_ref', ref);
 } catch (e) {}
 
-
-// Clean line icons for the bottom navigation (inherit the tab colour)
-const NAV_ICONS = {
-  vote: (
-    <>
-      <rect x="3" y="3" width="18" height="18" rx="4" />
-      <path d="M8 12.5l3 3 5-6" />
-    </>
-  ),
-  upload: (
-    <>
-      <path d="M12 16V4M7 9l5-5 5 5" />
-      <path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" />
-    </>
-  ),
-  top: (
-    <>
-      <path d="M8 4h8v5a4 4 0 01-8 0V4z" />
-      <path d="M8 6H5v1a3 3 0 003 3M16 6h3v1a3 3 0 01-3 3M12 13v4M9 20h6M10 17h4" />
-    </>
-  ),
-  profile: (
-    <>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21a8 8 0 0116 0" />
-    </>
-  ),
-  admin: <path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z" />
-};
-
-function NavIcon({ name }) {
-  return (
-    <span>
-      <svg viewBox="0 0 24 24" aria-hidden="true">{NAV_ICONS[name]}</svg>
-    </span>
-  );
-}
-
 function MainApp() {
   const [currentPage, setCurrentPage] = useState('auth');
   const [authView, setAuthView] = useState('landing'); // 'landing' | 'auth'
@@ -74,7 +35,9 @@ function MainApp() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('duel_token'));
   const [stats, setStats] = useState({ totalPhotos: 0, totalUsers: 0 });
-  const [tourStep, setTourStep] = useState(null); // null = tour closed
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [welcome, setWelcome] = useState(0);
+  const [dailyOpen, setDailyOpen] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -101,9 +64,28 @@ function MainApp() {
   useEffect(() => {
     if (token) {
       fetchCurrentUser();
-      setCurrentPage('vote');
+      const go = new URLSearchParams(window.location.search).get('go');
+      setCurrentPage(['vote', 'upload', 'leaderboard', 'profile'].includes(go) ? go : 'vote');
+      if (go) window.history.replaceState({}, '', '/');
+      syncPush(token);
     }
     fetchStats();
+  }, [token]);
+
+  // Keep the red dots fresh while the app is open
+  useEffect(() => {
+    if (!token) return;
+    const tick = () => {
+      fetchCurrentUser();
+      fetchDaily();
+    };
+    const id = setInterval(tick, 60000);
+    const onVisible = () => document.visibilityState === 'visible' && tick();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [token]);
 
   // Keep the photo counter fresh when switching pages
@@ -111,6 +93,7 @@ function MainApp() {
     if (token) {
       fetchStats();
       fetchCurrentUser();
+      fetchDaily();
     }
   }, [currentPage]);
 
@@ -122,12 +105,23 @@ function MainApp() {
       if (res.ok) {
         const userData = await res.json();
         setUser(userData);
-      } else {
+        if (userData.welcomeBonus > 0) setWelcome(userData.welcomeBonus);
+      } else if (res.status === 401 || res.status === 403) {
         logout();
       }
     } catch (err) {
       console.error('Failed to fetch user:', err);
     }
+  };
+
+  const fetchDaily = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/daily`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const d = await res.json();
+        setDailyOpen(!d.done);
+      }
+    } catch (err) {}
   };
 
   const fetchStats = async () => {
@@ -139,33 +133,6 @@ function MainApp() {
       console.error('Failed to fetch stats:', err);
     }
   };
-
-  // First-time tour: show once per account on this device
-  const tourKey = user?.id ? `duel_tour_done_${user.id}` : null;
-  useEffect(() => {
-    if (!tourKey) return;
-    let seen = false;
-    try {
-      seen = localStorage.getItem(tourKey) === '1';
-    } catch (e) {}
-    if (!seen) setTourStep(0);
-  }, [tourKey]);
-
-  // Move to the page each tour step talks about
-  useEffect(() => {
-    if (tourStep !== null && TOUR_STEPS[tourStep]) setCurrentPage(TOUR_STEPS[tourStep].page);
-  }, [tourStep]);
-
-  const closeTour = () => {
-    setTourStep(null);
-    setCurrentPage('vote');
-    if (tourKey) {
-      try {
-        localStorage.setItem(tourKey, '1');
-      } catch (e) {}
-    }
-  };
-  const tourTab = tourStep !== null ? TOUR_STEPS[tourStep]?.tab : null;
 
   const handleLogin = (authToken, userData) => {
     setToken(authToken);
@@ -194,17 +161,20 @@ function MainApp() {
               setAuthView('auth');
             }}
           />
-          <InstallPrompt />
+          <InstallPrompt hasNav={false} />
         </>
       );
     }
     return (
-      <AuthPage
-        onLogin={handleLogin}
-        initialMode={authMode}
-        notice={authNotice}
-        onBack={() => setAuthView('landing')}
-      />
+      <>
+        <AuthPage
+          onLogin={handleLogin}
+          initialMode={authMode}
+          notice={authNotice}
+          onBack={() => setAuthView('landing')}
+        />
+        <InstallPrompt hasNav={false} />
+      </>
     );
   }
 
@@ -214,7 +184,15 @@ function MainApp() {
       <header className="header">
         <div className="header-content">
           <h1 className="logo">📸 DUEL</h1>
-          <button className="tour-help" onClick={() => setTourStep(0)} aria-label="How Duel works">?</button>
+          <div className="header-right">
+            <span className="clout-chip" title="Your Clout">⚡ {user?.clout ?? 0}</span>
+            <button className="bell-btn" onClick={() => setShowNotifs(true)} aria-label="Notifications">
+              🔔
+              {user?.unreadNotifications > 0 && (
+                <i className="bell-badge">{user.unreadNotifications > 9 ? '9+' : user.unreadNotifications}</i>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -228,30 +206,31 @@ function MainApp() {
       </main>
 
       {/* Bottom navigation */}
-      <nav className={`bottom-nav ${tourStep !== null ? 'tour-active' : ''}`}>
+      <nav className="bottom-nav">
         <button
-          className={`bn-btn ${currentPage === 'vote' ? 'active' : ''} ${tourTab === 'vote' ? 'tour-spot' : ''}`}
+          className={`bn-btn ${currentPage === 'vote' ? 'active' : ''}`}
           onClick={() => setCurrentPage('vote')}
         >
-          <NavIcon name="vote" />Vote
+          <span>🗳️</span>Vote
+          {dailyOpen && <i className="bn-dot" />}
         </button>
         <button
-          className={`bn-btn ${currentPage === 'upload' ? 'active' : ''} ${tourTab === 'upload' ? 'tour-spot' : ''}`}
+          className={`bn-btn ${currentPage === 'upload' ? 'active' : ''}`}
           onClick={() => setCurrentPage('upload')}
         >
-          <NavIcon name="upload" />Upload
+          <span>📸</span>Upload
         </button>
         <button
-          className={`bn-btn ${currentPage === 'leaderboard' ? 'active' : ''} ${tourTab === 'leaderboard' ? 'tour-spot' : ''}`}
+          className={`bn-btn ${currentPage === 'leaderboard' ? 'active' : ''}`}
           onClick={() => setCurrentPage('leaderboard')}
         >
-          <NavIcon name="top" />Top
+          <span>🏆</span>Top
         </button>
         <button
-          className={`bn-btn ${currentPage === 'profile' ? 'active' : ''} ${tourTab === 'profile' ? 'tour-spot' : ''}`}
+          className={`bn-btn ${currentPage === 'profile' ? 'active' : ''}`}
           onClick={() => setCurrentPage('profile')}
         >
-          <NavIcon name="profile" />Profile
+          <span>👤</span>Profile
           {user?.pendingChallenges > 0 && <i className="bn-dot" />}
         </button>
         {user?.isAdmin && (
@@ -259,43 +238,64 @@ function MainApp() {
             className={`bn-btn ${currentPage === 'admin' ? 'active' : ''}`}
             onClick={() => setCurrentPage('admin')}
           >
-            <NavIcon name="admin" />Admin
+            <span>🛡️</span>Admin
           </button>
         )}
       </nav>
 
-      {tourStep !== null && (
-        <Tour
-          step={tourStep}
-          onNext={() => setTourStep((n) => Math.min(n + 1, TOUR_STEPS.length - 1))}
-          onBack={() => setTourStep((n) => Math.max(n - 1, 0))}
-          onClose={closeTour}
+      <Tips page={currentPage} hasNav />
+      <CloutToast />
+      <PushPrompt token={token} />
+      <InstallPrompt hasNav />
+
+      {showNotifs && (
+        <NotificationsPanel
+          token={token}
+          onClose={() => setShowNotifs(false)}
+          onNavigate={setCurrentPage}
+          onChanged={fetchCurrentUser}
         />
       )}
 
-      <InstallPrompt aboveNav paused={tourStep !== null} />
+      {welcome > 0 && <WelcomeModal amount={welcome} onClose={() => setWelcome(0)} />}
     </div>
   );
 }
 
 export default function App() {
+  // Lets the phone install DUEL and receive notifications
+  useEffect(() => {
+    registerSW();
+  }, []);
+
   if (photoMatch) {
     return (
-      <PhotoPage
-        photoId={decodeURIComponent(photoMatch[1])}
-        loggedIn={!!localStorage.getItem('duel_token')}
-      />
+      <>
+        <PhotoPage
+          photoId={decodeURIComponent(photoMatch[1])}
+          loggedIn={!!localStorage.getItem('duel_token')}
+        />
+        <InstallPrompt hasNav={false} />
+      </>
     );
   }
   if (battleMatch) {
-    return <BattlePage battleId={decodeURIComponent(battleMatch[1])} />;
+    return (
+      <>
+        <BattlePage battleId={decodeURIComponent(battleMatch[1])} />
+        <InstallPrompt hasNav={false} />
+      </>
+    );
   }
   if (profileMatch) {
     return (
-      <PublicProfile
-        username={decodeURIComponent(profileMatch[1])}
-        loggedIn={!!localStorage.getItem('duel_token')}
-      />
+      <>
+        <PublicProfile
+          username={decodeURIComponent(profileMatch[1])}
+          loggedIn={!!localStorage.getItem('duel_token')}
+        />
+        <InstallPrompt hasNav={false} />
+      </>
     );
   }
   return <MainApp />;

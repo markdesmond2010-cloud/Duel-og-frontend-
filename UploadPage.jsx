@@ -3,7 +3,7 @@ import { CATEGORIES } from './categories';
 
 export default function UploadPage({ token, onUploadSuccess }) {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('selfies');
+  const [category, setCategory] = useState('');
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,6 +30,11 @@ export default function UploadPage({ token, onUploadSuccess }) {
     if (!title || !image) {
       setMessageType('error');
       setMessage('Please fill in title and select an image');
+      return;
+    }
+    if (!category) {
+      setMessageType('error');
+      setMessage('Please choose a category before uploading');
       return;
     }
 
@@ -71,6 +76,11 @@ export default function UploadPage({ token, onUploadSuccess }) {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to save photo');
+      }
+
+      const saved = await res.json().catch(() => ({}));
+      if (saved.cloutEarned) {
+        window.dispatchEvent(new CustomEvent('duel-clout', { detail: { amount: saved.cloutEarned } }));
       }
 
       setMessageType('success');
@@ -133,7 +143,7 @@ export default function UploadPage({ token, onUploadSuccess }) {
 
             {/* Category */}
             <div className="form-group">
-              <label>Category *</label>
+              <label>Category * <em className="req-note">(required)</em></label>
               <div className="cat-chips">
                 {CATEGORIES.map((c) => (
                   <button
@@ -149,6 +159,8 @@ export default function UploadPage({ token, onUploadSuccess }) {
               </div>
             </div>
 
+            {!category && <p className="cat-help">👆 Choose a category to continue</p>}
+
             {/* Message */}
             {message && (
               <div className={`message ${messageType}`}>
@@ -160,7 +172,7 @@ export default function UploadPage({ token, onUploadSuccess }) {
             <button 
               type="submit" 
               className="btn-primary"
-              disabled={loading}
+              disabled={loading || !category}
             >
               {loading ? '⏳ Uploading...' : '✨ Upload Photo'}
             </button>
