@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { isIOS, isStandalone, pushPermission, pushSupported, enablePush } from './push';
+import './Engage.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 

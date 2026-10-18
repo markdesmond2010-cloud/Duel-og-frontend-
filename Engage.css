@@ -1,0 +1,223 @@
+/* DUEL engagement styles: Clout chip, bell, red dots, tips, install banner, toast, welcome pop-up */
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.clout-chip {
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.bell-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 6px;
+  cursor: pointer;
+  color: inherit;
+}
+.bell-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  background: #ef4444;
+  color: #fff;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 999px;
+}
+
+.bn-btn { position: relative; }
+.bn-dot {
+  position: absolute;
+  top: 6px;
+  left: 54%;
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-sizing: content-box;
+}
+
+/* Install banner */
+.install-bar {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #1f1f2e;
+  color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+.install-bar.above-nav { bottom: 78px; }
+.install-bar img { width: 40px; height: 40px; border-radius: 10px; }
+.install-text { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.install-text b { font-size: 14px; }
+.install-text small { font-size: 12px; opacity: 0.75; }
+.install-btn {
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.install-x {
+  background: transparent;
+  border: none;
+  color: #fff;
+  opacity: 0.7;
+  font-size: 16px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+/* Tips */
+.tip-bubble {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 880;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #1f1f2e;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.35;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  animation: duelRise 0.3s ease;
+}
+.tip-bubble.above-nav { bottom: 80px; }
+.tip-bubble span { flex: 1; }
+.tip-bubble button {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Clout toast */
+.clout-toast {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45);
+  animation: duelPop 0.35s ease;
+  pointer-events: none;
+}
+.clout-toast small { font-size: 12px; font-weight: 600; margin-top: 2px; }
+
+/* Welcome pop-up */
+.welcome-modal { text-align: center; }
+.welcome-emoji { font-size: 44px; line-height: 1; margin-bottom: 4px; }
+.welcome-line { opacity: 0.8; margin: 4px 0 10px; }
+.welcome-amount {
+  font-size: 40px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 6px 0;
+}
+.welcome-amount span { font-size: 18px; }
+.welcome-sub { font-size: 14px; opacity: 0.8; margin: 6px 0; }
+.welcome-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 16px;
+  text-align: left;
+  font-size: 14px;
+}
+.welcome-list li { padding: 6px 0; border-bottom: 1px solid rgba(128, 128, 128, 0.2); }
+.welcome-list li:last-child { border-bottom: none; }
+.welcome-btn {
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Notifications sheet */
+.notif-sheet { max-height: 80vh; overflow-y: auto; }
+.notif-head { display: flex; align-items: center; justify-content: space-between; }
+.notif-head h3 { margin: 0; }
+.notif-head button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+.notif-enable {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  background: linear-gradient(135deg, #ff6b6b, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.notif-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(128, 128, 128, 0.1);
+  color: inherit;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.notif-item small { opacity: 0.6; font-size: 12px; }
+.notif-item.unread { background: rgba(168, 85, 247, 0.15); border-left-color: #a855f7; font-weight: 600; }
+
+@keyframes duelRise { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes duelPop { from { transform: translateX(-50%) scale(0.7); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
